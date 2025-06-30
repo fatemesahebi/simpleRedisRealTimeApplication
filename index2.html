@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Frontend</title>
+</head>
+<body>
+  <h1>Real-time Data Sync</h1>
+  <input id="dataInput" placeholder="Enter data" />
+  <button id="sendBtn">Send</button>
+  <div id="messages"></div>
+
+  <!-- Socket.IO client -->
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+
+  <script>
+    // Wait until the page is fully loaded
+    window.addEventListener('DOMContentLoaded', () => {
+      const socket = io('http://localhost:3001'); // or 3001
+
+      const sendBtn = document.getElementById('sendBtn');
+      const input = document.getElementById('dataInput');
+      const messages = document.getElementById('messages');
+
+      sendBtn.addEventListener('click', () => {
+        const val = input.value;
+        if (val.trim()) {
+          socket.emit('change-data', { value: val });
+          input.value = '';
+        }
+      });
+
+      socket.on('data-updated', (data) => {
+        const msg = document.createElement('p');
+        msg.textContent = 'Data updated: ' + JSON.stringify(data);
+        messages.appendChild(msg);
+      });
+    });
+  </script>
+</body>
+</html>
